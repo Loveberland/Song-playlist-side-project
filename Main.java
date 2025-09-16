@@ -9,65 +9,71 @@ This is all color use in this code
 import java.util.Scanner;
 
 class Song {
-	public String title;
-	public Song next;
-	public Song previous;
+	String title;
+	Song next;
 
-	public Song(String title) {
+	Song (String title) {
 		this.title = title;
 		this.next = null;
-		this.previous = null;
-	}	// End of constructor
+	}
 }	// End of Song class
 
 class Playlist {
+	Scanner sc = new Scanner(System.in);	
 	private Song head;
-	private Song tail;	
 
-	public Playlist() {
-		this.head = null;
-		this.tail = null;
-	}	// End of constructor
-
-	public void display() {
-		System.out.printf("\033[91m-----Your Playlist-----\033[0m\n");	
-		Song current = head;	
-		if (current == null) {
-			System.out.printf("\033[94m(Empty)\033[0m\n");
-		}
-		while (current != null) {
-			System.out.printf("\033[92m%s\033[0m\n", current.title);
-			current = current.next;	
-		}
-		System.out.printf("\033[91m-----------------------\033[0m\n");
-	}	// End of display method
-
-	public void addSong(String title) {
+	void addSong(String title) {
 		Song newSong = new Song(title);
 		if (head == null) {
 			head = newSong;
-			tail = newSong;
-		} else {
-			tail.next = newSong;
-			newSong.previous = tail;
-			tail = newSong;
-		}
-	}	// End of addSong method
-
-	public void removeSong() {
-		if (tail == null) {
-			System.out.printf("\033[91mPlaylist is empty, nothing to remove.\033[0m\n");
 			return;
 		}
-		System.out.printf("\033[91mRemoved: %s\033[0m\n", tail.title);
-		if (head == tail) { // only one song
-			head = null;
-			tail = null;
-		} else {
-			tail = tail.previous;
-			tail.next = null;
+		Song current = head;
+		while (current.next != null) {
+			current = current.next;
 		}
+		current.next = newSong;	
+	}	// End of addSong method
+
+	void removeSong() {
+		if (head == null) {
+			System.out.printf("\033[94mNo song in playlist\033[0m\n");
+			return;	
+		}	
+		
+		System.out.printf("\033[94mWhich song you want to remove?: \033[0m");
+		String newTitle = sc.nextLine();
+		
+		if (head.title.equals(newTitle)) {
+			head = head.next;
+			return;	
+		}	
+		
+		Song current = head;	
+		while(current.next != null) {
+			if (current.next.title.equals(newTitle)) {
+				current.next = current.next.next;	
+				return;	
+			}
+		}
+		System.out.printf("\033[94mNot found\n\033[0m");
 	}	// End of removeSong method
+
+	void display() {
+		System.out.printf("\n\033[91m----------Your song----------\033[0m\n");	
+		if (head == null) {
+			System.out.printf("\033[92m(Empty)\033[0m\n");
+			System.out.printf("\033[91m-----------------------------\033[0m\n\n");	
+			return;
+		}
+		Song current = head;	
+		int count = 1;	
+		while (current != null) {
+			System.out.printf("\033[92m%d. %s\033[0m\n", count++, current.title);
+			current = current.next;	
+		}	
+		System.out.printf("\033[91m-----------------------------\033[0m\n\n");	
+	}	// End of display method
 }	// End of Playlist class
 
 public class Main {
@@ -95,7 +101,7 @@ public class Main {
 
 	static void getInput() {
 		Scanner sc = new Scanner(System.in);	
-		Playlist playlist = new Playlist();
+		Playlist playlist = new Playlist();		
 		getInputText();	
 		while(true) {
 			switch(sc.nextLine().toLowerCase()) {
@@ -108,7 +114,7 @@ public class Main {
 				case "r":
 					playlist.removeSong();
 					break;
-				
+
 				case "q":
 					endProgram();
 					break;
